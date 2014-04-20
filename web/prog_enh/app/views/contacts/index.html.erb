@@ -1,0 +1,95 @@
+<h1>Welcome to the Phonegap Progessive Enhancement demo</h1>
+
+<h3>Everyone will see this, regardless of Phonegap or not</h3>
+<div>
+	<input type="name" placeholder="Name" id="name" />
+	<br />
+	<input type="email" placeholder="E-mail" id="email"/>
+	<br />
+	<button id="submit">Submit</button>
+</div>
+
+<% if @phonegap %>
+	<h3>Only Phonegap users will see this</h3>
+	<button id="pgAdd">Add contacts from my phone</button>
+	<div id="loadWrap">
+		Loading...<img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
+	</div>
+<% end %>
+
+<h3>Contacts will show up here</h3>
+<ul id="contacts">
+
+</ul>
+<% if @phonegap %>
+	<%= javascript_include_tag "cordova" %>
+	<script type="text/javascript">
+		var isDeviceReady = false,
+			isDOMContentLoaded = false,
+			$loading;
+		document.addEventListener('deviceready', function () {
+			isDeviceReady = true;
+		});
+		document.addEventListener("DOMContentLoaded", function () {
+			isDOMContentLoaded = true;
+			$loading = document.getElementById('loadWrap');
+			document.getElementById('pgAdd').addEventListener('click', function (e) {
+				if (isDOMContentLoaded && isDeviceReady) {
+					getContacts();
+				} else {
+					alert("Still initializing - please wait and try again");
+				}
+			});
+		});
+		function getContacts() {
+			function onSuccess(contacts) {
+				var data = [],
+					entry = {};
+				for (var i=0; i < contacts.length; i++) {
+					entry = {}; // reset the object
+					if (contacts[i].displayName) {
+						entry.name = contacts[i].displayName;
+						if (contacts[i].emails) {
+							entry.email = contacts[i].emails[0].value;
+						}
+						addToList($contacts, entry.name, entry.email);
+					}
+				}
+				$loading.style.display = "none";
+			};
+		    function onError(contactError) {
+				alert("Oops! We encountered an unexpected error.");
+			    $loading.style.display = 'none';
+			    window.stop();
+		    };
+			var options = new ContactFindOptions(),
+				fields = ["*"]; //"*" will return all contact fields
+			options.filter = "";
+			options.multiple = true;
+			$loading.style.display = "block";
+		    navigator.contacts.find(fields, onSuccess, onError, options);
+		}
+	</script>
+<% end %>
+<script type="text/javascript">
+	var $contacts;
+	document.addEventListener('DOMContentLoaded', function (e) {
+		var $name = document.getElementById('name'),
+			$email = document.getElementById('email'),
+			$submit = document.getElementById('submit');
+		$contacts = document.getElementById('contacts');
+		$submit.addEventListener('click', function (e) {
+			e.preventDefault();
+			e.stopPropagation();
+			addToList($contacts, $name.value, $email.value);
+			$name.value = '';
+			$email.value = '';
+		});
+	});
+	function addToList(list, name, email) {
+		var $li = document.createElement('li');
+		$li.innerHTML = "<strong>" + name + "</strong> - <em>" + email + "</em>";
+		list.appendChild($li);
+		return true;
+	}
+</script>
