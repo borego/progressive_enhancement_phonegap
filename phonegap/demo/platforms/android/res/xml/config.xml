@@ -15,7 +15,7 @@
     <author email="me@bradorego.com" href="http://bradorego.com">
         Brad Orego
     </author>
-    <content src="http://localhost:8080" />
+    <content src="http://prog-enh-pg.herokuapp.com" />
     <access origin="*" />
     <feature name="http://api.phonegap.com/1.0/device" />
     <preference name="permissions" value="none" />
