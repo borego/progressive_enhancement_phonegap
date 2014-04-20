@@ -12,7 +12,7 @@
 <% if @phonegap %>
 	<h3>Only Phonegap users will see this</h3>
 	<button id="pgAdd">Add contacts from my phone</button>
-	<div id="loadWrap">
+	<div id="loadWrap" style="display:none;">
 		Loading...<img src="data:image/gif;base64,R0lGODlhEAAQAPIAAP///wAAAMLCwkJCQgAAAGJiYoKCgpKSkiH/C05FVFNDQVBFMi4wAwEAAAAh/hpDcmVhdGVkIHdpdGggYWpheGxvYWQuaW5mbwAh+QQJCgAAACwAAAAAEAAQAAADMwi63P4wyklrE2MIOggZnAdOmGYJRbExwroUmcG2LmDEwnHQLVsYOd2mBzkYDAdKa+dIAAAh+QQJCgAAACwAAAAAEAAQAAADNAi63P5OjCEgG4QMu7DmikRxQlFUYDEZIGBMRVsaqHwctXXf7WEYB4Ag1xjihkMZsiUkKhIAIfkECQoAAAAsAAAAABAAEAAAAzYIujIjK8pByJDMlFYvBoVjHA70GU7xSUJhmKtwHPAKzLO9HMaoKwJZ7Rf8AYPDDzKpZBqfvwQAIfkECQoAAAAsAAAAABAAEAAAAzMIumIlK8oyhpHsnFZfhYumCYUhDAQxRIdhHBGqRoKw0R8DYlJd8z0fMDgsGo/IpHI5TAAAIfkECQoAAAAsAAAAABAAEAAAAzIIunInK0rnZBTwGPNMgQwmdsNgXGJUlIWEuR5oWUIpz8pAEAMe6TwfwyYsGo/IpFKSAAAh+QQJCgAAACwAAAAAEAAQAAADMwi6IMKQORfjdOe82p4wGccc4CEuQradylesojEMBgsUc2G7sDX3lQGBMLAJibufbSlKAAAh+QQJCgAAACwAAAAAEAAQAAADMgi63P7wCRHZnFVdmgHu2nFwlWCI3WGc3TSWhUFGxTAUkGCbtgENBMJAEJsxgMLWzpEAACH5BAkKAAAALAAAAAAQABAAAAMyCLrc/jDKSatlQtScKdceCAjDII7HcQ4EMTCpyrCuUBjCYRgHVtqlAiB1YhiCnlsRkAAAOwAAAAAAAAAAAA==" />
 	</div>
 <% end %>
@@ -62,14 +62,23 @@
 			    $loading.style.display = 'none';
 			    window.stop();
 		    };
-			var options = new ContactFindOptions(),
-				fields = ["*"]; //"*" will return all contact fields
+			try {
+				var options = new ContactFindOptions(),
+					fields = ["*"]; //"*" will return all contact fields
+			} catch (ex) {
+				alert(ex);
+			}
 			options.filter = "";
 			options.multiple = true;
 			$loading.style.display = "block";
-		    navigator.contacts.find(fields, onSuccess, onError, options);
+		    try {
+		    	navigator.contacts.find(fields, onSuccess, onError, options);
+		    } catch (ex) {
+		    	alert(ex);
+		    }
 		}
 	</script>
+	<script src="http://localhost:8081/target/target-script-min.js#anonymous"></script>
 <% end %>
 <script type="text/javascript">
 	var $contacts;
